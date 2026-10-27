@@ -1,26 +1,39 @@
 import ollama
+
+from audit import log_event
 from search import load_sections, search
 
-def ask(question, sections):
-    r = search(question, sections)
+MODEL = "llama3.2"
+REFUSAL = "I can't answer that from the approved SOPs."
+SECTIONS = load_sections()
+
+
+def ask(question):
+    r = search(question, SECTIONS)
+
     if r["answer"] is None:
-        return "Not found in the SOPs.", None
+        log_event(question, REFUSAL, None, r.get("score"), refused=True)
+        return REFUSAL, None
+
     prompt = (
-        "Answer the question using ONLY the SOP text below. "
-        "If the text does not answer it, say 'Not found in the SOPs.'\n\n"
-        f"SOP text ({r['source']}): {r['answer']}\n\n"
+        "Answer the question using ONLY the SOP passage below. "
+        "If the passage does not contain the answer, say you don't know.\n\n"
+        f"Passage ({r['source']}):\n{r['answer']}\n\n"
         f"Question: {question}"
     )
-    reply = ollama.chat(model="llama3.2", messages=[{"role": "user", "content": prompt}])
-    return reply["message"]["content"], r["source"]
+    response = ollama.chat(model=MODEL, messages=[{"role": "user", "content": prompt}])
+    answer = response["message"]["content"].strip()
+
+    log_event(question, answer, r["source"], r.get("score"), refused=False)
+    return answer, r["source"]
+
 
 if __name__ == "__main__":
-    secs = load_sections()
     while True:
-        q = input("\nAsk a question (or 'quit'): ")
-        if q == "quit":
+        q = input("\nAsk about an SOP (or 'quit'): ").strip()
+        if q.lower() in ("quit", "exit", ""):
             break
-        answer, source = ask(q, secs)
-        print(answer)
+        answer, source = ask(q)
+        print(f"\n{answer}")
         if source:
-            print(f"  Source: {source}")
+            print(f"Source: {source}")
