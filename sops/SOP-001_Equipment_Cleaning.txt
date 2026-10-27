@@ -1,0 +1,4 @@
+SOP-001 Equipment Cleaning
+Section 1: Mixers must be cleaned after every batch and before a product changeover.
+Section 2: Use purified water followed by 70% isopropyl alcohol. Allow 15 minutes contact time.
+Section 3: Swab samples are taken from worst-case locations and sent to QC within 4 hours.

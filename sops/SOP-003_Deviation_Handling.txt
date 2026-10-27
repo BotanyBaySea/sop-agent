@@ -1,0 +1,4 @@
+SOP-003 Deviation Handling
+Section 1: Any departure from an approved procedure must be reported to QA within 24 hours.
+Section 2: Deviations are recorded in the electronic QMS with a unique number.
+Section 3: A root cause investigation must be completed within 30 days.

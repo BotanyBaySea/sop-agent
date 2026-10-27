@@ -1,0 +1,4 @@
+SOP-002 Line Clearance
+Section 1: Line clearance is required before starting any new packaging lot.
+Section 2: Remove all labels, cartons and product from the previous lot.
+Section 3: A second person must verify the clearance and sign the batch record.
