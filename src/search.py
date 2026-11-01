@@ -14,15 +14,21 @@ THRESHOLD = 0.65
 
 
 def load_sections(folder=SOP_DIR):
-    """Return every section of every approved document as {'source', 'text'}."""
+    """Return every section of every approved document as {'source', 'text', 'doc_version'}."""
     sections = []
     for path in sorted(Path(folder).glob("*.txt")):
-        lines = path.read_text(encoding="utf-8").splitlines()
+        raw = path.read_bytes()
+        doc_version = hashlib.sha256(raw).hexdigest()[:12]
+        lines = raw.decode("utf-8").splitlines()
         sop_id = lines[0].split()[0]
         for line in lines[1:]:
             if line.startswith("Section ") and ":" in line:
                 label, text = line.split(":", 1)
-                sections.append({"source": f"{sop_id} {label.strip()}", "text": text.strip()})
+                sections.append({
+                    "source": f"{sop_id} {label.strip()}",
+                    "text": text.strip(),
+                    "doc_version": doc_version,
+                })
     return sections
 
 
@@ -71,4 +77,9 @@ def search(question, sections):
     source = sections[best]["source"]
     if score < THRESHOLD:
         return {"answer": None, "source": source, "score": score}
-    return {"answer": sections[best]["text"], "source": source, "score": score}
+    return {
+        "answer": sections[best]["text"],
+        "source": source,
+        "score": score,
+        "doc_version": sections[best]["doc_version"],
+    }

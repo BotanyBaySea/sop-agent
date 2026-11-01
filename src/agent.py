@@ -24,7 +24,7 @@ def ask(question):
     response = ollama.chat(model=MODEL, messages=[{"role": "user", "content": prompt}])
     answer = response["message"]["content"].strip()
 
-    log_event(question, answer, r["source"], r.get("score"), refused=False)
+    log_event(question, answer, r["source"], r.get("score"), refused=False, doc_version=r.get("doc_version"))
     return answer, r["source"]
 
 

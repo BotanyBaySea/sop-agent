@@ -86,6 +86,8 @@ def test_oq04_answered_question_is_logged(fake_llm, temp_log):
     assert entry["source"] == source
     assert entry["answer"] == answer
     assert entry["timestamp"]
+    assert entry["user"]
+    assert len(entry["doc_version"]) == 12
 
 
 def test_oq04_refused_question_is_logged_and_log_only_grows(fake_llm, temp_log):
