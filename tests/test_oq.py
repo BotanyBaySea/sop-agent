@@ -10,6 +10,7 @@ from search import THRESHOLD, load_sections, search
 
 SECTIONS = load_sections()
 DOC_IDS = ("FDA-DI-2018", "FDA-P11-2003", "WHO-DI-2021")
+MARGIN = 0.10
 
 
 class FakeResponse(dict):
@@ -50,17 +51,18 @@ def test_oq01_sections_come_only_from_approved_documents():
 @pytest.mark.parametrize(
     "question, expected_source",
     [
-        ("Why is FDA concerned with shared login accounts?", "FDA-DI-2018 Section 32"),
+            ("Why is FDA concerned with shared login accounts?", "FDA-DI-2018 Section 32"),
         ("How should blank forms be controlled?", "FDA-DI-2018 Section 34"),
         ("Are audit trails important even if predicate rules don't require documenting the date, time, or sequence of events?", "FDA-P11-2003 Section 31"),
-        ("What is data governance?", "WHO-DI-2021 Section 23"),
+        ("What is data governance?", "WHO-DI-2021 Section 14"),
+        ("What does ALCOA mean?", "WHO-DI-2021 Section 7"),
     ],
 )
 def test_oq02_answers_cite_the_correct_section(question, expected_source):
     result = search(question, SECTIONS)
     assert result["answer"] is not None
     assert result["source"] == expected_source
-    assert result["score"] >= THRESHOLD
+    assert result["score"] >= THRESHOLD + MARGIN
 
 
 @pytest.mark.parametrize(
@@ -74,13 +76,7 @@ def test_oq02_answers_cite_the_correct_section(question, expected_source):
 def test_oq03_off_topic_questions_are_refused(question):
     result = search(question, SECTIONS)
     assert result["answer"] is None
-    assert result["score"] < THRESHOLD
-
-
-@pytest.mark.xfail(strict=True, reason="Keyword search misses ALCOA; semantic search fixes this")
-def test_oq03_alcoa_question_is_answered():
-    result = search("What does ALCOA mean?", SECTIONS)
-    assert result["answer"] is not None
+    assert result["score"] <= THRESHOLD - MARGIN
 
 
 def test_oq04_answered_question_is_logged(fake_llm, temp_log):
