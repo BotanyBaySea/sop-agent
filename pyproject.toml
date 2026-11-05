@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sop-agent"
+version = "1.0.0"
+description = "Validated local RAG assistant over FDA/WHO data integrity guidance"
+requires-python = ">=3.10"
+dependencies = ["numpy", "ollama", "pypdf", "requests"]
+
+[tool.setuptools]
+packages = ["src"]

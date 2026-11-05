@@ -16,8 +16,11 @@ def ask(question):
         return REFUSAL, None
 
     prompt = (
-        "Answer the question using ONLY the SOP passage below. "
-        "If the passage does not contain the answer, say you don't know.\n\n"
+        "Answer the question using ONLY the SOP passage below.\n"
+        "If the passage covers the topic, answer directly from it, even if it uses a related term, "
+        "an expanded form, or different wording than the question.\n"
+        "State the answer itself. Do not comment on whether the passage answers the question.\n"
+        "Say you don't know only if the passage contains nothing relevant to the question.\n\n"
         f"Passage ({r['source']}):\n{r['answer']}\n\n"
         f"Question: {question}"
     )
